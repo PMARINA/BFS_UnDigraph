@@ -40,3 +40,14 @@ a.out
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Irrelevant files #
+####################
+.*/
+/cmake-build-debug
+/graph_reader_new
+/graph_sort
+/images
+/tuple_text_to_binary_csr_extreme_graph
+/tuple_text_to_binary_csr_mem_weight
+/tuple_text_to_binary_csr_mmap

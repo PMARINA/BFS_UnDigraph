@@ -1,3 +1,10 @@
+<h1>Process for Starting:</h1>
+<ol>
+<li> `wget https://snap.stanford.edu/data/bigdata/communities/com-orkut.ungraph.txt.gz`</li>
+<li> `gzip -d /path/to/com-orkut.ungraph.txt.gz`</li>
+<li> `/path/to/text_to_bin.bin /path/to/com-orkut.ungraph.txt 1 0`</li>
+<li> Build and run graph reader... To disable parallel processing, remove `omp.h` include and `#pragma omp *`</li>
+</ol>
 -----
 Software requirement
 -----
