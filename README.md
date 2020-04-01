@@ -1,10 +1,29 @@
 <h1>Process for Starting:</h1>
 <ol>
-<li> `wget https://snap.stanford.edu/data/bigdata/communities/com-orkut.ungraph.txt.gz`</li>
-<li> `gzip -d /path/to/com-orkut.ungraph.txt.gz`</li>
-<li> `/path/to/text_to_bin.bin /path/to/com-orkut.ungraph.txt 1 0`</li>
-<li> Build and run graph reader... To disable parallel processing, remove `omp.h` include and `#pragma omp *`</li>
+<li> 
+
+`wget https://snap.stanford.edu/data/bigdata/communities/com-orkut.ungraph.txt.gz`
+
+<li>
+
+`gzip -d /path/to/com-orkut.ungraph.txt.gz`</li>
+<li>
+
+`/path/to/text_to_bin.bin /path/to/com-orkut.ungraph.txt 1 0`</li>
+<li>
+
+Build and run graph reader... To disable parallel processing, remove `omp.h` include and `#pragma omp *` </li>
 </ol>
+
+<em>The rest of this documentation is from past repo. Please note that some of the above documentation also came from the same. I do not claim credit for any documentation. </em>
+
+Summary of changes:
+
+<li>
+
+Added **flawed** BFS implementation to graph_reader (WIP)</li>
+<li>Updated gitignore</li>
+
 -----
 Software requirement
 -----
