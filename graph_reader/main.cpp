@@ -10,10 +10,14 @@ uint32_t endNode = 3072626;//last node in the graph
 bool *checked;
 bool notFound = true;
 uint32_t arrayIndex = 0;
-uint32_t *current;
-uint32_t *nextRound;
+bool *current;
+bool *nextRound;
 
 void clearChecked();
+
+void clearCurrent();
+
+void clearNextRound();
 
 void checkAndAdd(uint32_t i);
 
@@ -38,28 +42,28 @@ int main(int args, char **argv) {
             <long, long, int, long, long, char>
             (beg_file, csr_file, weight_file);
     checked = new bool[ginst->vert_count];
-    current = new uint32_t[ginst->vert_count];
-    nextRound = new uint32_t[ginst->vert_count];
+    current = new bool[ginst->vert_count];
+    nextRound = new bool[ginst->vert_count];
     clearChecked();
     uint32_t distance = 0;
-    current[0] = startNode;
+    current[startNode] = true;
     checked[startNode] = true;
-    uint32_t current_size = 1;
     omp_set_num_threads(8);
     cout << "Starting now" << endl;
     while (notFound) {
         //for should be in multithread
 #pragma omp parallel for
-        for (int i = 0; i < current_size; i++) {
-            checkAndAdd(current[i]);
+        for (int i = 0; i < ginst->vert_count; i++) {
+            if(current[i]){
+                checkAndAdd(i);
+            }
         }
         //should be in single thread
         cout << distance << endl;
         if (notFound) {
             distance++;
             swap(current, nextRound);
-            current_size = arrayIndex;
-            arrayIndex = 0; //no need to clear anything; just overwrite.
+            clearNextRound();
         }
     }
     cout << "End was " << distance << " nodes away from Start" << endl;
@@ -92,6 +96,16 @@ void clearChecked() {
 
 }
 
+void clearCurrent() {
+    memset(current, 0,
+           sizeof(*current));
+}
+
+void clearNextRound() {
+    memset(nextRound, 0,
+           sizeof(*nextRound));
+}
+
 void checkAndAdd(uint32_t i) {
     uint32_t beg_index = i;
     if (i == endNode) {
@@ -110,7 +124,7 @@ void checkAndAdd(uint32_t i) {
         uint32_t neighborNumber = ginst->csr[j];
         if (!checked[neighborNumber]) {
             checked[neighborNumber] = true;
-            nextRound[__sync_fetch_and_add(&arrayIndex,1)] = neighborNumber;
+            nextRound[neighborNumber] = true;
         }
     }
     return;
