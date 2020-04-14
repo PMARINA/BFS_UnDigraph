@@ -7,10 +7,11 @@ using namespace std;
 
 uint32_t startNode = 1;
 uint32_t endNode = 3072626;//last node in the graph
-vector<uint32_t> current;
-vector<uint32_t> nextRound;
 bool *checked;
 bool notFound = true;
+uint32_t arrayIndex = 0;
+uint32_t *current;
+uint32_t *nextRound;
 
 void clearChecked();
 
@@ -37,21 +38,28 @@ int main(int args, char **argv) {
             <long, long, int, long, long, char>
             (beg_file, csr_file, weight_file);
     checked = new bool[ginst->vert_count];
+    current = new uint32_t[ginst->vert_count];
+    nextRound = new uint32_t[ginst->vert_count];
     clearChecked();
     uint32_t distance = 0;
-    current.push_back(startNode);
+    current[0] = startNode;
     checked[startNode] = true;
+    uint32_t current_size = 1;
     omp_set_num_threads(8);
-    cout<<"Starting now"<<endl;
+    cout << "Starting now" << endl;
     while (notFound) {
+        //for should be in multithread
 #pragma omp parallel for
-        for (int i = 0; i < current.size(); i++) {
+        for (int i = 0; i < current_size; i++) {
             checkAndAdd(current[i]);
         }
+        //should be in single thread
+        cout << distance << endl;
         if (notFound) {
             distance++;
             swap(current, nextRound);
-            nextRound.clear();
+            current_size = arrayIndex;
+            arrayIndex = 0; //no need to clear anything; just overwrite.
         }
     }
     cout << "End was " << distance << " nodes away from Start" << endl;
@@ -79,7 +87,8 @@ void clearChecked() {
 //        checked[i]= false;
 //    }
 
-    memset(checked, 0, sizeof(*checked)); //I think this works, but if it breaks, the alternate code above should definitely work
+    memset(checked, 0,
+           sizeof(*checked)); //I think this works, but if it breaks, the alternate code above should definitely work
 
 }
 
@@ -101,7 +110,7 @@ void checkAndAdd(uint32_t i) {
         uint32_t neighborNumber = ginst->csr[j];
         if (!checked[neighborNumber]) {
             checked[neighborNumber] = true;
-            nextRound.push_back(neighborNumber);
+            nextRound[__sync_fetch_and_add(&arrayIndex,1)] = neighborNumber;
         }
     }
     return;

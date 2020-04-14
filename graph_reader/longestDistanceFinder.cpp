@@ -9,8 +9,8 @@ uint32_t startNode = 1;
 uint32_t farthestNode = -1;
 uint32_t maxDistance = -1;
 uint32_t endNode = 3072626;//last node in the graph
-vector<uint32_t> current;
-vector<uint32_t> nextRound;
+vector <uint32_t> current;
+vector <uint32_t> nextRound;
 bool *checked;
 bool notFound = true;
 
@@ -42,20 +42,7 @@ int main(int args, char **argv) {
     ginst = new graph
             <long, long, int, long, long, char>
             (beg_file, csr_file, weight_file);
-
-    //**
-    //You can implement your single threaded graph algorithm here.
-    //like BFS, SSSP, PageRank and etc.
-
-    //for(int i = 0; i < ginst->vert_count+1; i++)
-    //{
-    //    int beg = ginst->beg_pos[i];
-    //    int end = ginst->beg_pos[i+1];
-    //    std::cout<<i<<"'s neighor list: ";
-    //    for(int j = beg; j < end; j++)
-    //        std::cout<<ginst->csr[j]<<" ";
-    //    std::cout<<"\n";
-    //} 
+    checked = new bool[ginst->vert_count];
 
     for (int i = startNode; i <= endNode; i++) {
         uint32_t d = distance(startNode, i);
@@ -80,7 +67,7 @@ int main(int args, char **argv) {
 }
 
 uint32_t distance(uint32_t startNode, uint32_t endNode) {
-    checked = new bool[ginst->vert_count];
+
     clearChecked();
     uint32_t distance = 0;
     current.push_back(startNode);
