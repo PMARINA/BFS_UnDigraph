@@ -9,20 +9,17 @@ uint32_t startNode = 1;
 uint32_t endNode = 3072626;//last node in the graph
 bool *checked;
 bool notFound = true;
-uint32_t arrayIndex = 0;
-bool *current;
-bool *nextRound;
 
-void clearChecked();
+uint32_t *depth;
 
-void clearCurrent();
-
-void clearNextRound();
+void clearDepth();
 
 void checkAndAdd(uint32_t i);
 
 graph<long, long, int, long, long, char>
         *ginst;
+uint32_t dist = 0;
+uint32_t nextDist = 1;
 
 int main(int args, char **argv) {
     std::cout << "Input: ./exe beg csr weight\n";
@@ -41,70 +38,39 @@ int main(int args, char **argv) {
     ginst = new graph
             <long, long, int, long, long, char>
             (beg_file, csr_file, weight_file);
-    checked = new bool[ginst->vert_count];
-    current = new bool[ginst->vert_count];
-    nextRound = new bool[ginst->vert_count];
-    clearChecked();
-    uint32_t distance = 0;
-    current[startNode] = true;
-    checked[startNode] = true;
+    depth = new uint32_t[ginst->vert_count];
+    clearDepth();
+    depth[startNode] = dist;
     omp_set_num_threads(8);
     cout << "Starting now" << endl;
     while (notFound) {
         //for should be in multithread
 #pragma omp parallel for
         for (int i = 0; i < ginst->vert_count; i++) {
-            if(current[i]){
+            if (depth[i] == dist) {
                 checkAndAdd(i);
+//                cout<<"Check and Add (" <<i << ");" <<endl;
             }
         }
         //should be in single thread
-        cout << distance << endl;
+        cout << dist << endl;
         if (notFound) {
-            distance++;
-            swap(current, nextRound);
-            clearNextRound();
+            dist++;
+            nextDist++;
         }
     }
-    cout << "End was " << distance << " nodes away from Start" << endl;
-    //**
-    //You can implement your single threaded graph algorithm here.
-    //like BFS, SSSP, PageRank and etc.
-
-    //for(int i = 0; i < ginst->vert_count+1; i++)
-    //{
-    //    int beg = ginst->beg_pos[i];
-    //    int end = ginst->beg_pos[i+1];
-    //    std::cout<<i<<"'s neighor list: ";
-    //    for(int j = beg; j < end; j++)
-    //        std::cout<<ginst->csr[j]<<" ";
-    //    std::cout<<"\n";
-    //} 
-
+    cout << "End was " << dist << " nodes away from Start" << endl;
 
     return 0;
 }
 
-void clearChecked() {
-//#pragma omp parallel for
-//    for(int i = 0; i<ginst->vert_count;i++){
-//        checked[i]= false;
-//    }
-
-    memset(checked, 0,
-           sizeof(*checked)); //I think this works, but if it breaks, the alternate code above should definitely work
-
+void clearDepth() {
+#pragma omp parallel for
+    for (int i = 0; i < ginst->vert_count; i++) {
+        depth[i] = -1;
+    }
 }
 
-void clearCurrent() {
-    memset(current, 0,
-           sizeof(*current));
-}
-
-void clearNextRound() {
-    memset(nextRound, 0,
-           sizeof(*nextRound));
-}
 
 void checkAndAdd(uint32_t i) {
     uint32_t beg_index = i;
@@ -122,9 +88,8 @@ void checkAndAdd(uint32_t i) {
 #pragma omp parallel for
     for (int j = ginst->beg_pos[beg_index]; j < end; j++) {
         uint32_t neighborNumber = ginst->csr[j];
-        if (!checked[neighborNumber]) {
-            checked[neighborNumber] = true;
-            nextRound[neighborNumber] = true;
+        if (depth[neighborNumber]==-1) {
+            depth[neighborNumber] = nextDist;
         }
     }
     return;
