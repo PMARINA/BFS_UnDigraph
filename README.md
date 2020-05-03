@@ -19,7 +19,7 @@ Summary of changes:
 
 <li>
   
-**BFS Implementation (complete) located in graph_reader/main.cpp. Please compile with `-fopenmp` compiler flag.
+**BFS Implementation (complete) located in graph_reader/main.cpp. Please compile with `-fopenmp` compiler flag.**
 
 </li>
 <li>Updated gitignore</li>
