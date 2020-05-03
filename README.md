@@ -19,7 +19,7 @@ Summary of changes:
 
 <li>
   
-Added **flawed** BFS implementation to graph_reader (Parallelization flawed, single threaded likely works, but needs to be tested)
+**BFS Implementation (complete) located in graph_reader/main.cpp. Please compile with `-fopenmp` compiler flag.
 
 </li>
 <li>Updated gitignore</li>
